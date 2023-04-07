@@ -10,14 +10,14 @@ export class BaseEntity {
   isDeleted!: boolean;
 
   @Column({
-    type: 'timestamptz',
-    default: new Date(),
+    type: 'integer',
+    default: Date.now(),
   })
   createDate!: Date;
 
   @Column({
-    type: 'timestamptz',
-    default: new Date(),
+    type: 'integer',
+    default: Date.now(),
   })
   updateDate!: Date;
 }

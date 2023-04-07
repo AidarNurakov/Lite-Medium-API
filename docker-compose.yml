@@ -1,0 +1,17 @@
+version: '3'
+services:
+  server:
+    image: node:latest
+    container_name: users-server
+    working_dir: /server
+    volumes:
+    - ./server:/server
+    command: npm run dev
+    ports:
+    - "8080:80"
+    networks:
+    - siziksu
+      
+networks:
+  siziksu:
+    driver: bridge

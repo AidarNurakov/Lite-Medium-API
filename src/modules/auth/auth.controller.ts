@@ -33,7 +33,7 @@ export class AuthController {
     type: () => SignUpResponseDto,
   })
   @Post(routesConfig.auth.signUp)
-  signUp(@Body() dto: SignUpDto): Promise<SignUpResponseDto> {
+  async signUp(@Body() dto: SignUpDto): Promise<SignUpResponseDto> {
     return this.authService.signUp(dto);
   }
 
@@ -44,7 +44,7 @@ export class AuthController {
     type: () => LoginResponseDto,
   })
   @Post(routesConfig.auth.login)
-  login(@Body() dto: LoginDto): Promise<SignUpResponseDto> {
+  async login(@Body() dto: LoginDto): Promise<SignUpResponseDto> {
     return this.authService.login(dto);
   }
 
@@ -55,7 +55,9 @@ export class AuthController {
     type: () => RefreshTokenResponseDto,
   })
   @Post(routesConfig.auth.refreshToken)
-  refreshToken(@Body() dto: RefreshTokenDto): Promise<RefreshTokenResponseDto> {
+  async refreshToken(
+    @Body() dto: RefreshTokenDto,
+  ): Promise<RefreshTokenResponseDto> {
     return this.authService.refreshToken(dto);
   }
 
@@ -65,7 +67,7 @@ export class AuthController {
     type: () => UserEntity,
   })
   @Get(routesConfig.auth.me)
-  getMe(@Actor() actor: UserEntity): UserEntity {
+  async getMe(@Actor() actor: UserEntity): Promise<UserEntity> {
     return actor;
   }
 }
