@@ -31,4 +31,8 @@ export class UserService {
       items,
     };
   }
+
+  async incrementRate(id: number): Promise<void> {
+    await this.userRepository.updateRate(id);
+  }
 }

@@ -5,10 +5,14 @@ import { PostRepository } from '../database/repositories/post.repository';
 import { PostEntity } from '../database/entities/post.entity';
 import { ListResponseDto } from '../../shared/dto/list-response.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class PostService {
-  constructor(private readonly postRepository: PostRepository) {}
+  constructor(
+    private readonly postRepository: PostRepository,
+    private readonly userService: UserService,
+  ) {}
 
   async create(dto: CreatePostDto, user: UserEntity) {
     const readingTime = await this.calculateReadingTime(dto.content);
@@ -59,7 +63,7 @@ export class PostService {
     return this.postRepository.findById(id);
   }
 
-  async inrementClaps(id: number) {
+  async inrementClaps(id: number, user: UserEntity) {
     const post = await this.postRepository.findOne({ id });
 
     if (!post) {
@@ -68,6 +72,8 @@ export class PostService {
     const updateData = { ...post, claps: ++post.claps, updateDate: Date.now() };
 
     await this.postRepository.updateById(id, updateData);
+
+    await this.userService.incrementRate(user.id);
 
     return this.postRepository.findById(id);
   }

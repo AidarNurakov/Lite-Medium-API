@@ -42,4 +42,13 @@ export class UserRepository {
       .take(limit)
       .getManyAndCount();
   }
+
+  async updateRate(userId: number) {
+    await this.userRepository
+      .createQueryBuilder('user')
+      .update()
+      .set({ rate: () => 'rate + 1' })
+      .where('id = :userId', { userId })
+      .execute();
+  }
 }

@@ -110,8 +110,11 @@ export class PostController {
     type: () => PostEntity,
   })
   @Put(routesConfig.post.incrementClaps)
-  async incrementClaps(@Param('id') id: number): Promise<PostEntity> {
-    return this.postService.inrementClaps(id);
+  async incrementClaps(
+    @Param('id') id: number,
+    @Actor() user: UserEntity,
+  ): Promise<PostEntity> {
+    return this.postService.inrementClaps(id, user);
   }
 
   @ApiResponse({
