@@ -72,6 +72,8 @@ export class AuthService {
       uid: user.id,
     });
 
+    user.password = undefined;
+
     return {
       accessToken,
       refreshToken,

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity } from '../entities/post.entity';
 import { Repository } from 'typeorm';
-import { ListPostsQueryDto } from '../../post/dto/list-posts-query.dto';
+import { PaginationQueryDto } from '../../post/dto/list-posts-query.dto';
 import { UserEntity } from '../entities/user.entity';
 import { getSkipPaginationValue } from '../../../shared/utils';
 
@@ -33,27 +33,12 @@ export class PostRepository {
     });
   }
 
-  async list(
-    { page = 1, limit = 20, ...query }: ListPostsQueryDto,
-    user: UserEntity,
-  ) {
+  async list({ page = 1, limit = 20 }: PaginationQueryDto, user: UserEntity) {
     const queryRunner = this.postRepository
       .createQueryBuilder('post')
-      .leftJoinAndSelect('post.user', 'user')
+      .leftJoinAndSelect('post.author', 'author')
       .where('post.isDeleted = false')
-      .andWhere('user.id = :userId', { userId: user.id });
-
-    if (query.title) {
-      queryRunner.andWhere('LOWER(post.title) like :name', {
-        name: `%${query.title}%`,
-      });
-    }
-
-    if (query.completed) {
-      queryRunner.andWhere('post.isCompleted = :isCompleted', {
-        isCompleted: query.completed,
-      });
-    }
+      .andWhere('author.id = :authorId', { authorId: user.id });
 
     return queryRunner
       .skip(getSkipPaginationValue(page, limit))

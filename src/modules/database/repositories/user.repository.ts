@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from '../../user/dto/create-user.dto';
+import { PaginationQueryDto } from 'src/modules/post/dto/list-posts-query.dto';
+import { getSkipPaginationValue } from 'src/shared/utils';
 
 @Injectable()
 export class UserRepository {
@@ -11,7 +12,7 @@ export class UserRepository {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async create(userData: CreateUserDto): Promise<UserEntity | UserEntity[]> {
+  async create(userData): Promise<UserEntity | UserEntity[]> {
     const user = this.userRepository.create(userData);
 
     return this.userRepository.save(user);
@@ -29,5 +30,16 @@ export class UserRepository {
     return this.userRepository.findOne({
       where: query,
     });
+  }
+
+  async list({ page = 1, limit = 20 }: PaginationQueryDto) {
+    const queryRunner = this.userRepository
+      .createQueryBuilder('user')
+      .where('user.isDeleted = false');
+
+    return queryRunner
+      .skip(getSkipPaginationValue(page, limit))
+      .take(limit)
+      .getManyAndCount();
   }
 }

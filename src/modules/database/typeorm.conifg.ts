@@ -15,8 +15,6 @@ export class TypeormConfig implements TypeOrmOptionsFactory {
       database,
       namingStrategy: new SnakeNamingStrategy(),
       entities: [join(__dirname, './entities/*.entity{.ts,.js}')],
-      migrations: [join(__dirname, './migrations/*{.ts,.js}')],
-      migrationsTableName: 'migrations',
       synchronize: true,
     };
   }

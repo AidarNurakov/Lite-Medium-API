@@ -15,6 +15,9 @@ export class UserEntity extends BaseEntity {
   })
   password: string;
 
+  @Column({ type: 'integer', default: 0 })
+  rate: number;
+
   @OneToMany(() => PostEntity, (post) => post.author)
   posts: PostEntity[];
 

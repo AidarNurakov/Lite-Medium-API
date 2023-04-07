@@ -1,16 +1,7 @@
-import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-export class ListPostsQueryDto {
-  @IsOptional()
-  @IsString()
-  title: string;
-
-  @IsOptional()
-  @IsBoolean()
-  @Transform(({ value }) => value && value === 'true')
-  completed: boolean;
-
+export class PaginationQueryDto {
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => value && +value)

@@ -12,7 +12,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { routesConfig, validationPipeConfig } from '../../configs';
+import { routesConfig } from '../../configs';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -27,7 +27,7 @@ import { Actor } from '../../shared/decorators/actor.decorator';
 import { UserEntity } from '../database/entities/user.entity';
 import { PostEntity } from '../database/entities/post.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ListPostsQueryDto } from './dto/list-posts-query.dto';
+import { PaginationQueryDto } from './dto/list-posts-query.dto';
 import { ListResponseDto } from '../../shared/dto/list-response.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 
@@ -35,7 +35,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 @ApiTags('Posts [User]')
 @UseGuards(JwtAuthGuard)
 @Controller(routesConfig.post.root)
-@UsePipes(new ValidationPipe(validationPipeConfig))
+@UsePipes(new ValidationPipe({ transform: true }))
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
@@ -80,17 +80,12 @@ export class PostController {
     name: 'limit',
     required: false,
   })
-  @ApiQuery({
-    type: Boolean,
-    name: 'completed',
-    required: false,
-  })
   @ApiResponse({
     type: () => ListResponseDto,
   })
   @Get(routesConfig.post.list)
   async list(
-    @Query() query: ListPostsQueryDto,
+    @Query() query: PaginationQueryDto,
     @Actor() user: UserEntity,
   ): Promise<ListResponseDto<PostEntity>> {
     return this.postService.list(query, user);
@@ -110,6 +105,15 @@ export class PostController {
   ): Promise<PostEntity> {
     return this.postService.updateById(id, dto, user);
   }
+
+  @ApiResponse({
+    type: () => PostEntity,
+  })
+  @Put(routesConfig.post.incrementClaps)
+  async incrementClaps(@Param('id') id: number): Promise<PostEntity> {
+    return this.postService.inrementClaps(id);
+  }
+
   @ApiResponse({
     type: () => PostEntity,
   })

@@ -14,6 +14,12 @@ export class PostEntity extends BaseEntity {
   })
   content: string;
 
+  @Column({ type: 'integer' })
+  readingTime: number;
+
+  @Column({ type: 'integer', default: 0 })
+  claps: number;
+
   @ManyToOne(() => UserEntity, (author) => author.posts)
   author: UserEntity;
 }

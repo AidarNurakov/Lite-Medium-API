@@ -68,6 +68,7 @@ export class AuthController {
   })
   @Get(routesConfig.auth.me)
   async getMe(@Actor() actor: UserEntity): Promise<UserEntity> {
+    actor.password = undefined;
     return actor;
   }
 }

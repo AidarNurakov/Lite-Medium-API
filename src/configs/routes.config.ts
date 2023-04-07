@@ -1,6 +1,7 @@
 const roots = {
   authRoot: '/auth',
-  postRoot: '/tasks',
+  postRoot: '/posts',
+  userRoot: '/users',
 };
 
 export default {
@@ -20,5 +21,12 @@ export default {
     updateById: '/:id',
     list: '',
     deleteById: '/:id',
+    incrementClaps: 'increment/:id',
+  },
+  user: {
+    root: roots.userRoot,
+    create: '',
+    findById: '/:id',
+    list: '',
   },
 };

@@ -11,16 +11,18 @@ export class PostService {
   constructor(private readonly postRepository: PostRepository) {}
 
   async create(dto: CreatePostDto, user: UserEntity) {
+    const readingTime = await this.calculateReadingTime(dto.content);
     return (await this.postRepository.create({
+      author: user,
+      readingTime,
       ...dto,
-      user,
     })) as PostEntity;
   }
 
-  async findById(id: number, user: UserEntity) {
+  async findById(id: number, author: UserEntity) {
     const post = await this.postRepository.findOne({
       id,
-      user,
+      author,
     });
 
     if (!post) {
@@ -42,23 +44,36 @@ export class PostService {
   async updateById(
     id: number,
     dto: UpdatePostDto,
-    user: UserEntity,
+    author: UserEntity,
   ): Promise<PostEntity> {
-    const post = await this.postRepository.findOne({ id, user });
+    const post = await this.postRepository.findOne({ id, author });
 
     if (!post) {
       throw new NotFoundException('Not found post');
     }
 
-    const updateData = { ...post, ...dto, updateDate: new Date() };
+    const updateData = { ...post, ...dto, updateDate: Date.now() };
 
     await this.postRepository.updateById(id, updateData);
 
     return this.postRepository.findById(id);
   }
 
-  async deleteById(id: number, user: UserEntity) {
-    const post = await this.postRepository.findOne({ id, user });
+  async inrementClaps(id: number) {
+    const post = await this.postRepository.findOne({ id });
+
+    if (!post) {
+      throw new NotFoundException('Not found post');
+    }
+    const updateData = { ...post, claps: ++post.claps, updateDate: Date.now() };
+
+    await this.postRepository.updateById(id, updateData);
+
+    return this.postRepository.findById(id);
+  }
+
+  async deleteById(id: number, author: UserEntity) {
+    const post = await this.postRepository.findOne({ id, author });
 
     if (!post) {
       throw new NotFoundException('Not found post');
@@ -67,5 +82,13 @@ export class PostService {
     await this.postRepository.softRemove(id);
 
     return this.postRepository.findById(post.id);
+  }
+
+  private async calculateReadingTime(article: string) {
+    const wordsPerMinute = 275;
+    const totalWords = article.split(/\s+/g).length;
+    const estimatedReadingTime = Math.ceil(totalWords / wordsPerMinute);
+
+    return estimatedReadingTime;
   }
 }
